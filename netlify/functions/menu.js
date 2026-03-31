@@ -1,39 +1,17 @@
-const https = require('https');
-
-exports.handler = (event, context, callback) => {
-  const lat = event.queryStringParameters?.lat || '41.8408';
-  const lng = event.queryStringParameters?.lng || '-72.4509';
-
-  // Use Leafly's public API (no auth needed)
-  const url = `https://www.leafly.com/api/location/near?lat=${lat}&lng=${lng}&skip=0&limit=20`;
-
-  https.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
-    let data = '';
-    res.on('data', chunk => data += chunk);
-    res.on('end', () => {
-      try {
-        const parsed = JSON.parse(data);
-        const stores = (parsed.retailers || []).map((s, i) => ({
-          id: String(s.id || i),
-          name: s.name,
-          dist: (s.distance || 0).toFixed(1),
-          rating: s.rating || 4.5,
-          city: s.city,
-          state: s.state,
-          url: s.url || '#',
-          color: ['#39d353','#22d3ee','#a78bfa','#f97316'][i % 4]
-        }));
-
-        callback(null, {
-          statusCode: 200,
-          headers: { 'Access-Control-Allow-Origin': '*' },
-          body: JSON.stringify({ stores, products: [], count: stores.length, scrapedAt: new Date().toISOString() })
-        });
-      } catch (e) {
-        callback(null, { statusCode: 200, headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ stores: [], products: [], count: 0, error: 'API unavailable' }) });
-      }
-    });
-  }).on('error', () => {
-    callback(null, { statusCode: 200, headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ stores: [], products: [], count: 0 }) });
-  });
+exports.handler = async (event) => {
+  return {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    body: JSON.stringify({
+      stores: [
+        { id: '1', name: 'Green Leaf', short: 'Green', dist: 2.3, rating: 4.5, city: 'Hartford, CT', state: 'CT', url: '#', color: '#39d353' },
+        { id: '2', name: 'Peaceful Gardens', short: 'Peace', dist: 4.1, rating: 4.8, city: 'Manchester, CT', state: 'CT', url: '#', color: '#22d3ee' }
+      ],
+      products: [
+        { name: 'Blue Dream', type: 'sativa', thc: 22, prices: { '3.5g': 45, '7g': 85 }, onSale: false, sid: '1' },
+        { name: 'OG Kush', type: 'indica', thc: 24, prices: { '3.5g': 50, '7g': 95 }, onSale: true, sid: '2' }
+      ],
+      scrapedAt: new Date().toISOString()
+    })
+  };
 };

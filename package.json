@@ -1,0 +1,1 @@
+{"name": "gramhunt","version": "1.0.0","description": "A project using axios library","main": "index.js","scripts": {"test": "echo 'Error: no test specified' && exit 1"},"author": "joshjmontalvo","license": "ISC","dependencies": {"axios": "^0.21.1"}}

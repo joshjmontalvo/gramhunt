@@ -1,36 +1,29 @@
-const fetch = require('node-fetch');
+const https = require('https');
 
-const API_URL = 'https://api.iheartjane.com/v1/stores';
+exports.handler = (event, context, callback) => {
+  const { lat, lng, radius } = event.queryStringParameters;
 
-async function getStoresByLocation(lat, lng) {
-    const response = await fetch(`${API_URL}?lat=${lat}&lng=${lng}&limit=10}`);
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    return await response.json();
-}
+  if (!lat || !lng) {
+    return callback(null, {
+      statusCode: 400,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'Missing lat/lng' })
+    });
+  }
 
-async function getLiveMenu(storeId) {
-    const response = await fetch(`${API_URL}/${storeId}/live-menu`);
-    if (!response.ok) {
-        throw new Error('Unable to fetch live menu');
-    }
-    return await response.json();
-}
+  const url = `https://api.iheartjane.com/stores?lat=${lat}&lng=${lng}&radius=${radius || 25}`;
 
-exports.handler = async (event) => {
-    const { lat, lng } = JSON.parse(event.body);
-    try {
-        const stores = await getStoresByLocation(lat, lng);
-        const menus = await Promise.all(stores.map(store => getLiveMenu(store.id)));
-        return {
-            statusCode: 200,
-            body: JSON.stringify(menus),
-        };
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message }),
-        };
-    }
+  https.get(url, (res) => {
+    let data = '';
+    res.on('data', (chunk) => { data += chunk; });
+    res.on('end', () => {
+      callback(null, {
+        statusCode: 200,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: data
+      });
+    });
+  }).on('error', (e) => {
+    callback(null, { statusCode: 500, body: JSON.stringify({ error: e.message }) });
+  });
 };

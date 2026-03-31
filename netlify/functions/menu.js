@@ -1,29 +1,30 @@
-const https = require('https');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
-exports.handler = (event, context, callback) => {
-  const { lat, lng, radius } = event.queryStringParameters;
+const iHeartJaneMenuScraper = async () => {
+    const url = 'https://iheartjane.com/your-dispensary-url'; // Update with the actual URL
+    try {
+        const { data } = await axios.get(url);
+        const $ = cheerio.load(data);
 
-  if (!lat || !lng) {
-    return callback(null, {
-      statusCode: 400,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ error: 'Missing lat/lng' })
-    });
-  }
+        const products = [];
+        $('.menu-item').each((index, element) => {
+            const product = $(element);
+            const name = product.find('.product-name').text().trim();
+            const price = product.find('.product-price').text().trim();
+            // Add more fields as needed
 
-  const url = `https://api.iheartjane.com/stores?lat=${lat}&lng=${lng}&radius=${radius || 25}`;
+            products.push({ name, price });
+        });
 
-  https.get(url, (res) => {
-    let data = '';
-    res.on('data', (chunk) => { data += chunk; });
-    res.on('end', () => {
-      callback(null, {
-        statusCode: 200,
-        headers: { 'Access-Control-Allow-Origin': '*' },
-        body: data
-      });
-    });
-  }).on('error', (e) => {
-    callback(null, { statusCode: 500, body: JSON.stringify({ error: e.message }) });
-  });
+        return {
+            store: 'iHeartJane',
+            products
+        };
+    } catch (error) {
+        console.error('Error scraping data:', error);
+        return null;
+    }
 };
+
+module.exports = { iHeartJaneMenuScraper };

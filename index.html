@@ -111,7 +111,7 @@ select{background:var(--surf);border:1px solid var(--b2);color:var(--text);paddi
 </head>
 <body>
 <header class="hdr">
-  <div class="logo"><div class="logo-box">&#x1f331;</div><div>Gram<em>Hunt</em></div></div>
+  <div class="logo"><div class="logo-box">&#x1F331;</div><div>Gram<em>Hunt</em></div></div>
   <div class="hdr-r">
     <div class="live-badge"><span class="ldot"></span><span id="sBadge">0 Stores</span></div>
     <button class="scan-btn" id="scanBtn" onclick="doScan()">Scan Menus</button>
@@ -129,18 +129,18 @@ select{background:var(--surf);border:1px solid var(--b2);color:var(--text);paddi
   <div class="tab" id="tC" onclick="swTab('c')">Ask AI</div>
 </div>
 <div class="chat-panel" id="cpanel">
-  <div class="chat-msgs" id="cmsgs"><div class="cm a">Hey! I'm GramHunt AI. Scan menus first, then ask me about deals&#x2014;cheapest eighths, strongest strains, what's on sale, anything!</div></div>
+  <div class="chat-msgs" id="cmsgs"><div class="cm a">Hey! I'm GramHunt AI. Scan menus first, then ask me about deals—cheapest eighths, strongest strains, what's on sale, anything!</div></div>
   <div class="ci-row"><input class="ci" id="cinp" placeholder="What's the cheapest sativa over 25% THC?" onkeydown="if(event.key==='Enter')sendC()"><button class="cs" id="csend" onclick="sendC()">Send</button></div>
 </div>
 <div class="browse on" id="bpanel">
   <div class="ctrl">
-    <div class="sbox"><span class="si">&#x1f50d;</span><input type="text" id="q" placeholder="Search strain or brand..." oninput="render()"></div>
+    <div class="sbox"><span class="si">&#x1F50D;</span><input type="text" id="q" placeholder="Search strain or brand..." oninput="render()"></div>
     <div class="fr" id="storeF"><button class="chip on" data-st="all" onclick="setSt('all')">All Stores</button></div>
     <div class="fr">
       <button class="chip on" data-sz="all" onclick="setSz('all')">Any Size</button>
-      <button class="chip" data-sz="3.5g" onclick="setSz('3.5g')">&frac18; oz</button>
-      <button class="chip" data-sz="7g" onclick="setSz('7g')">&frac14; oz</button>
-      <button class="chip" data-sz="14g" onclick="setSz('14g')">&frac12; oz</button>
+      <button class="chip" data-sz="3.5g" onclick="setSz('3.5g')">⅛ oz</button>
+      <button class="chip" data-sz="7g" onclick="setSz('7g')">¼ oz</button>
+      <button class="chip" data-sz="14g" onclick="setSz('14g')">½ oz</button>
       <button class="chip" data-sz="28g" onclick="setSz('28g')">1 oz</button>
     </div>
     <div class="fr">
@@ -173,7 +173,6 @@ const ST=0.0635,MT=0.03;
 const WG={'1g':1,'3.5g':3.5,'7g':7,'14g':14,'28g':28};
 const WL={'1g':'1g','3.5g':'1/8 oz — 3.5g','7g':'1/4 oz — 7g','14g':'1/2 oz — 14g','28g':'1 oz — 28g'};
 let prods=[],storesArr=[],uLat=null,uLon=null,szF='all',tyF='all',stF='all',showTax=true;
-
 function $(id){return document.getElementById(id);}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -235,7 +234,7 @@ function updStats(){
 
 function updStoreF(){
   var r=$('storeF');
-  r.innerHTML='<button class="chip on" data-st="all" onclick="setSt('all')">All Stores</button>';
+  r.innerHTML='<button class="chip on" data-st="all" onclick="setSt(\'all\')">'+'All Stores</button>';
   storesArr.forEach(function(s){
     var b=document.createElement('button');
     b.className='chip';b.dataset.st=s.id;
@@ -310,8 +309,7 @@ async function sendC(){
     var body=JSON.stringify({query:msg,products:prods.slice(0,80),stores:storesArr});
     var r=await(await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:body})).json();
     var td=document.getElementById('td');if(td)td.remove();
-    msgs.innerHTML+='<div class="cm a">'+r.answer.replace(/**(.*?)**/g,'<strong>$1</strong>').replace(/
-/g,'<br>')+'</div>';
+    msgs.innerHTML+='<div class="cm a">'+r.answer.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')+'</div>';
   }catch(e){
     var td=document.getElementById('td');if(td)td.remove();
     msgs.innerHTML+='<div class="cm a" style="border-color:var(--red)">Error reaching server. Make sure the API is running!</div>';

@@ -8,572 +8,316 @@
 <title>GramHunt — Live Dispensary Deals Near You</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#080c08;--surf:#0e130e;--card:#121812;--b1:#1a271a;--b2:#1f2e1f;
-  --green:#39d353;--gdim:rgba(57,211,83,.12);
-  --amber:#f59e0b;--purple:#8b5cf6;--red:#ef4444;
-  --text:#e0ece0;--t2:#7a9a7a;--muted:#3a523a;
-  --sat:#f97316;--ind:#6366f1;--hyb:#10b981;--gold:#fbbf24;
-}
+:root{--bg:#080c08;--surf:#0e130e;--card:#121812;--b1:#1a271a;--b2:#1f2e1f;--green:#39d353;--gdim:rgba(57,211,83,.12);--amber:#f59e0b;--purple:#8b5cf6;--red:#ef4444;--text:#e0ece0;--t2:#7a9a7a;--muted:#3a523a;--sat:#f97316;--ind:#6366f1;--hyb:#10b981;--gold:#fbbf24}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{min-height:100%;background:var(--bg);overflow-x:hidden}
 body{color:var(--text);font-family:'Space Grotesk',sans-serif}
-
-.hdr{position:sticky;top:0;z-index:300;background:rgba(8,12,8,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--b1);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;flex-shrink:0}
+.hdr{position:sticky;top:0;z-index:300;background:rgba(8,12,8,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--b1);padding:11px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700}
 .logo-box{width:30px;height:30px;background:var(--green);border-radius:7px;display:grid;place-items:center;font-size:14px;box-shadow:0 0 16px rgba(57,211,83,.35)}
 .logo em{color:var(--green);font-style:normal}
-.gps-badge{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;border:1px solid;font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;max-width:160px;overflow:hidden;white-space:nowrap}
-.gps-badge span:last-child{overflow:hidden;text-overflow:ellipsis}
-.gdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:blink 1.5s infinite}
-.gps-badge.wait{background:rgba(245,158,11,.08);color:var(--amber);border-color:rgba(245,158,11,.25)}
-.gps-badge.ok{background:var(--gdim);color:var(--green);border-color:rgba(57,211,83,.25)}
-.gps-badge.err{background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.25)}
-.gps-badge.ok .gdot{background:var(--green);box-shadow:0 0 5px var(--green)}
-.gps-badge.wait .gdot{background:var(--amber)}
-.gps-badge.err .gdot{background:var(--red);animation:none}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-
-/* Location input bar */
-.loc-bar{background:var(--surf);border-bottom:1px solid var(--b1);padding:8px 16px;display:flex;gap:8px}
-.loc-input{flex:1;background:var(--b1);border:1px solid var(--b2);color:var(--text);padding:7px 12px;font-family:'Space Grotesk',sans-serif;font-size:12px;border-radius:7px;outline:none}
-.loc-input:focus{border-color:var(--green)}
-.loc-input::placeholder{color:var(--muted)}
-.loc-btn{background:var(--green);color:#040a04;border:none;padding:7px 14px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;border-radius:7px;cursor:pointer;white-space:nowrap;flex-shrink:0}
-.loc-btn:disabled{opacity:.5;cursor:not-allowed}
-
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:12px 16px 0}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.live-badge{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--gdim);border:1px solid rgba(57,211,83,.25);font-size:10px;color:var(--green);font-weight:600;letter-spacing:.07em}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:pulse 1.5s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.scan-btn{background:var(--green);color:#040a04;border:none;padding:6px 12px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;border-radius:7px;cursor:pointer;transition:opacity .15s}
+.scan-btn:disabled{opacity:.4;cursor:not-allowed}
+.locbar{background:var(--surf);border-bottom:1px solid var(--b1);padding:7px 16px;display:flex;align-items:center;gap:8px;font-size:11px}
+.loctxt{flex:1;color:var(--t2);font-family:'JetBrains Mono',monospace}
+.loctxt b{color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:12px 16px}
 @media(max-width:420px){.stats{grid-template-columns:repeat(2,1fr)}}
 .sc{background:var(--surf);border:1px solid var(--b1);border-radius:10px;padding:10px 12px}
-.sc .v{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;color:var(--green);line-height:1}
+.sc .v{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:500;color:var(--green);line-height:1}
 .sc .l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
-
+.tab-row{display:flex;border-bottom:1px solid var(--b1);padding:0 16px}
+.tab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab.on{color:var(--green);border-color:var(--green)}
+.chat-panel{display:none;flex-direction:column;height:calc(100vh - 220px);min-height:350px}
+.chat-panel.on{display:flex}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.cm{max-width:85%;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.5;animation:up .3s ease both}
+.cm.u{align-self:flex-end;background:var(--green);color:#040a04;border-bottom-right-radius:4px}
+.cm.a{align-self:flex-start;background:var(--surf);border:1px solid var(--b1);border-bottom-left-radius:4px}
+.ci-row{padding:12px 16px;border-top:1px solid var(--b1);display:flex;gap:8px}
+.ci{flex:1;background:var(--surf);border:1px solid var(--b2);color:var(--text);padding:10px 14px;font-family:'Space Grotesk',sans-serif;font-size:13px;border-radius:10px;outline:none}
+.ci:focus{border-color:var(--green)}
+.ci::placeholder{color:var(--muted)}
+.cs{background:var(--green);color:#040a04;border:none;padding:10px 18px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;border-radius:10px;cursor:pointer}
+.cs:disabled{opacity:.4}
+.typing{display:flex;gap:4px;padding:8px 12px}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typ 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes typ{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+.browse{display:none}.browse.on{display:block}
 .ctrl{padding:10px 16px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--b1)}
 .sbox{position:relative}
-.sbox input{width:100%;background:var(--surf);border:1px solid var(--b2);color:var(--text);padding:8px 10px 8px 30px;font-family:'Space Grotesk',sans-serif;font-size:13px;border-radius:8px;outline:none;transition:border-color .2s}
+.sbox input{width:100%;background:var(--surf);border:1px solid var(--b2);color:var(--text);padding:8px 10px 8px 30px;font-family:'Space Grotesk',sans-serif;font-size:13px;border-radius:8px;outline:none}
 .sbox input:focus{border-color:var(--green)}
 .sbox input::placeholder{color:var(--muted)}
 .si{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none;color:var(--muted)}
-
-.row{display:flex;gap:5px;flex-wrap:wrap}
-.chip{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2);transition:all .15s;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
+.fr{display:flex;gap:5px;flex-wrap:wrap}
+.chip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--t2);transition:all .15s;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
 .chip.on{background:var(--gdim);color:var(--green);border-color:rgba(57,211,83,.4)}
 .chip.on-s{background:rgba(249,115,22,.1);color:var(--sat);border-color:rgba(249,115,22,.4)}
 .chip.on-i{background:rgba(99,102,241,.1);color:var(--ind);border-color:rgba(99,102,241,.4)}
 .chip.on-h{background:rgba(16,185,129,.1);color:var(--hyb);border-color:rgba(16,185,129,.4)}
-
 .brow{display:flex;gap:7px;align-items:center}
 select{background:var(--surf);border:1px solid var(--b2);color:var(--text);padding:7px 8px;font-family:'Space Grotesk',sans-serif;font-size:11px;border-radius:7px;outline:none;cursor:pointer;flex:1}
-.taxrow{display:flex;align-items:center;gap:6px}
-.taxlbl{font-size:11px;color:var(--t2);white-space:nowrap}
+.taxrow{display:flex;align-items:center;gap:8px}
+.taxlbl{font-size:11px;color:var(--t2)}
 .toggle{width:34px;height:18px;background:var(--b2);border-radius:9px;position:relative;transition:background .2s;cursor:pointer;border:none;flex-shrink:0}
 .toggle.on{background:var(--green)}
 .toggle::after{content:'';position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s}
 .toggle.on::after{left:19px}
-.radrow{display:flex;align-items:center;gap:5px;white-space:nowrap}
-.radrow label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
-#rv{font-size:10px;color:var(--green);font-family:'JetBrains Mono',monospace;min-width:40px}
-input[type=range]{-webkit-appearance:none;width:70px;height:3px;background:var(--b2);border-radius:2px;outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--green);cursor:pointer;box-shadow:0 0 7px rgba(57,211,83,.5)}
-
-/* Store filter pills */
-.store-bar{padding:8px 16px;display:flex;gap:5px;overflow-x:auto;border-bottom:1px solid var(--b1);scrollbar-width:none}
-.store-bar::-webkit-scrollbar{display:none}
-.sp{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid var(--b2);background:var(--surf);cursor:pointer;white-space:nowrap;font-size:11px;color:var(--t2);transition:all .15s;user-select:none}
-.sp.on{background:var(--gdim);color:var(--green);border-color:rgba(57,211,83,.4)}
-.spdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.spdm{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
-
-/* Loader */
-.loader{display:none;padding:40px 16px;text-align:center}
-.loader.on{display:block}
-.spin{width:36px;height:36px;border:2px solid var(--b2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.lmsg{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t2);margin-bottom:10px}
-.lsteps{display:flex;flex-direction:column;gap:4px;align-items:center;max-height:200px;overflow:hidden}
-.lstep{font-size:11px;display:flex;align-items:center;gap:6px;opacity:0;transition:opacity .3s;color:var(--t2)}
-.lstep.on{opacity:1}
-.ldot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-
-/* Results */
 .results{padding:12px 16px}
-.welcome{padding:50px 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px}
-.wi{font-size:46px}
-.welcome h2{font-size:20px;font-weight:700}
-.welcome p{font-size:12px;color:var(--t2);max-width:340px;line-height:1.7}
-.empty{display:none;padding:40px 0;text-align:center;color:var(--muted);font-size:12px}
-.empty.on{display:block}
+.empty{display:none;padding:40px 0;text-align:center;color:var(--muted);font-size:12px}.empty.on{display:block}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
 .rcount{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)}
-.scraped{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px}
-.vbtns{display:flex;gap:3px}
-.vb{background:var(--surf);border:1px solid var(--b2);color:var(--muted);padding:5px 8px;border-radius:5px;cursor:pointer;font-size:14px;transition:all .15s}
-.vb.on{background:var(--gdim);border-color:rgba(57,211,83,.4);color:var(--green)}
-
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px}
-.listv{display:flex;flex-direction:column;gap:7px}
-
 .card{background:var(--card);border:1px solid var(--b1);border-radius:12px;padding:14px;animation:up .3s ease both;transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
 .card:hover{border-color:var(--b2);box-shadow:0 5px 18px rgba(0,0,0,.35)}
 .card.best{border-color:var(--gold)!important;box-shadow:0 0 18px rgba(251,191,36,.1)!important}
 .card.deal{border-color:rgba(57,211,83,.4)}
-.card.topc{border-color:rgba(139,92,246,.35)}
 @keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .ribbon{position:absolute;top:0;right:0;background:var(--gold);color:#1a1000;font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:4px 10px;border-bottom-left-radius:8px}
-
 .bgs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
 .bg{font-size:9px;font-weight:600;padding:2px 6px;border-radius:9px;letter-spacing:.07em;text-transform:uppercase;border:1px solid}
 .bg-s{background:rgba(249,115,22,.12);color:var(--sat);border-color:rgba(249,115,22,.28)}
 .bg-i{background:rgba(99,102,241,.12);color:var(--ind);border-color:rgba(99,102,241,.28)}
 .bg-h{background:rgba(16,185,129,.12);color:var(--hyb);border-color:rgba(16,185,129,.28)}
-.bg-deal{background:rgba(57,211,83,.1);color:var(--green);border-color:rgba(57,211,83,.28)}
-.bg-thc{background:rgba(139,92,246,.12);color:var(--purple);border-color:rgba(139,92,246,.28)}
 .bg-sale{background:rgba(239,68,68,.12);color:var(--red);border-color:rgba(239,68,68,.28)}
-
 .sname{font-weight:700;font-size:15px;line-height:1.2;margin-bottom:10px}
 .thcrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .thclabel{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;width:42px;flex-shrink:0}
 .thctrack{flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden}
 .thcfill{height:100%;border-radius:3px}
-.score-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.score-lbl{font-size:10px;color:var(--muted);white-space:nowrap}
-.score-track{flex:1;height:4px;background:var(--b1);border-radius:2px;overflow:hidden}
-.score-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--gold))}
-.score-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);width:28px;text-align:right;flex-shrink:0}
-
 .pblock{background:var(--surf);border:1px solid var(--b1);border-radius:10px;padding:12px;margin-bottom:10px}
 .pblock-head{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-.prow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--b1)}
-.prow:last-child{border-bottom:none}
-.prow.hi{background:var(--gdim);margin:0 -4px;padding:5px 4px;border-radius:5px;border-bottom:none}
-.prow.hi .pamt{color:var(--green)!important}
+.prow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--b1)}.prow:last-child{border-bottom:none}
 .plabel{font-size:11px;color:var(--t2)}
 .pamt{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;color:var(--text)}
 .ptax{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--amber);margin-left:4px}
-.ptax-lbl{font-size:9px;color:var(--muted)}
-.tax-note{font-size:9px;color:var(--muted);padding:5px 0 0;font-style:italic}
-
 .stag{display:flex;align-items:center;gap:7px;padding-top:9px;border-top:1px solid var(--b1)}
 .sic{width:26px;height:26px;border-radius:5px;display:grid;place-items:center;font-weight:800;font-size:9px;flex-shrink:0}
 .snm{font-size:11px;font-weight:600}
 .sdt{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
-.shrs{font-family:'JetBrains Mono',monospace;font-size:9px;margin-top:2px;color:var(--green)}
-.obtn{font-size:10px;color:var(--green);border:1px solid rgba(57,211,83,.22);background:var(--gdim);padding:5px 10px;border-radius:5px;cursor:pointer;font-weight:700;white-space:nowrap;text-decoration:none;font-family:'Space Grotesk',sans-serif}
-
-/* No results / fallback store list */
-.store-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
-.store-link{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surf);border:1px solid var(--b1);border-radius:10px;text-decoration:none;color:var(--text);transition:border-color .15s}
-.store-link:hover{border-color:var(--b2)}
-
-::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.loader{display:none;text-align:center;padding:40px;color:var(--green)}.loader.on{display:block}
+.loader .sp{width:30px;height:30px;border:3px solid var(--b1);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
 </style>
 </head>
 <body>
-
 <header class="hdr">
-  <div class="logo">
-    <div class="logo-box">🌿</div>
-    <div>Gram<em>Hunt</em></div>
-  </div>
-  <div class="gps-badge wait" id="gpsBadge" onclick="getGPS()">
-    <span class="gdot"></span>
-    <span id="gpsLbl">Allow GPS</span>
+  <div class="logo"><div class="logo-box">&#x1f331;</div><div>Gram<em>Hunt</em></div></div>
+  <div class="hdr-r">
+    <div class="live-badge"><span class="ldot"></span><span id="sBadge">0 Stores</span></div>
+    <button class="scan-btn" id="scanBtn" onclick="doScan()">Scan Menus</button>
   </div>
 </header>
-
-<!-- Location input -->
-<div class="loc-bar">
-  <input class="loc-input" id="locInput" type="text" placeholder="Or enter zip, city, or address..." onkeydown="if(event.key==='Enter')searchByText()">
-  <button class="loc-btn" id="locBtn" onclick="searchByText()">Search</button>
+<div class="locbar"><span class="loctxt" id="locTxt">Detecting location...</span></div>
+<div class="stats">
+  <div class="sc"><div class="v" id="sN">&#x2014;</div><div class="l">Products</div></div>
+  <div class="sc"><div class="v" id="sC">&#x2014;</div><div class="l">Cheapest</div></div>
+  <div class="sc"><div class="v" id="sT">&#x2014;</div><div class="l">Top THC</div></div>
+  <div class="sc"><div class="v" id="sSale">&#x2014;</div><div class="l">On Sale</div></div>
 </div>
-
-<!-- Stats -->
-<div class="stats" id="stats" style="display:none">
-  <div class="sc"><div class="v" id="sN">0</div><div class="l">Products</div></div>
-  <div class="sc"><div class="v" id="sS">0</div><div class="l">Stores</div></div>
-  <div class="sc"><div class="v" id="sC">—</div><div class="l">Cheapest</div></div>
-  <div class="sc"><div class="v" id="sT">—</div><div class="l">Top THC</div></div>
+<div class="tab-row">
+  <div class="tab on" id="tB" onclick="swTab('b')">Browse</div>
+  <div class="tab" id="tC" onclick="swTab('c')">Ask AI</div>
 </div>
-
-<!-- Controls -->
-<div class="ctrl">
-  <div class="sbox">
-    <span class="si">🔍</span>
-    <input type="text" id="q" placeholder="Search strain or brand..." oninput="render()">
-  </div>
-  <div class="row" id="szRow">
-    <button class="chip on" data-sz="all"  onclick="setSz('all')">Any Size</button>
-    <button class="chip"    data-sz="3.5g" onclick="setSz('3.5g')">⅛ oz (3.5g)</button>
-    <button class="chip"    data-sz="7g"   onclick="setSz('7g')">¼ oz (7g)</button>
-    <button class="chip"    data-sz="14g"  onclick="setSz('14g')">½ oz (14g)</button>
-    <button class="chip"    data-sz="28g"  onclick="setSz('28g')">1 oz (28g)</button>
-  </div>
-  <div class="row" id="tyRow">
-    <button class="chip on" data-ty="all"    onclick="setTy('all')">All</button>
-    <button class="chip"    data-ty="sativa" onclick="setTy('sativa')">🌞 Sativa</button>
-    <button class="chip"    data-ty="indica" onclick="setTy('indica')">🌙 Indica</button>
-    <button class="chip"    data-ty="hybrid" onclick="setTy('hybrid')">⚡ Hybrid</button>
-  </div>
-  <div class="brow">
-    <select id="sort" onchange="render()">
-      <option value="best">⭐ Best Match</option>
-      <option value="cheap">💰 Cheapest First</option>
-      <option value="thc">🔥 Highest THC</option>
-      <option value="sale">🏷️ On Sale First</option>
-      <option value="dist">📍 Closest Store</option>
-      <option value="az">A → Z</option>
-    </select>
-    <div class="radrow">
-      <label>Radius</label>
-      <input type="range" id="radSlider" min="5" max="50" value="25" oninput="onRad()">
-      <span id="rv">25 mi</span>
+<div class="chat-panel" id="cpanel">
+  <div class="chat-msgs" id="cmsgs"><div class="cm a">Hey! I'm GramHunt AI. Scan menus first, then ask me about deals&#x2014;cheapest eighths, strongest strains, what's on sale, anything!</div></div>
+  <div class="ci-row"><input class="ci" id="cinp" placeholder="What's the cheapest sativa over 25% THC?" onkeydown="if(event.key==='Enter')sendC()"><button class="cs" id="csend" onclick="sendC()">Send</button></div>
+</div>
+<div class="browse on" id="bpanel">
+  <div class="ctrl">
+    <div class="sbox"><span class="si">&#x1f50d;</span><input type="text" id="q" placeholder="Search strain or brand..." oninput="render()"></div>
+    <div class="fr" id="storeF"><button class="chip on" data-st="all" onclick="setSt('all')">All Stores</button></div>
+    <div class="fr">
+      <button class="chip on" data-sz="all" onclick="setSz('all')">Any Size</button>
+      <button class="chip" data-sz="3.5g" onclick="setSz('3.5g')">&frac18; oz</button>
+      <button class="chip" data-sz="7g" onclick="setSz('7g')">&frac14; oz</button>
+      <button class="chip" data-sz="14g" onclick="setSz('14g')">&frac12; oz</button>
+      <button class="chip" data-sz="28g" onclick="setSz('28g')">1 oz</button>
     </div>
-    <div class="taxrow">
-      <span class="taxlbl">Tax</span>
-      <button class="toggle on" id="taxToggle" onclick="toggleTax()"></button>
+    <div class="fr">
+      <button class="chip on" data-ty="all" onclick="setTy('all')">All</button>
+      <button class="chip" data-ty="sativa" onclick="setTy('sativa')">Sativa</button>
+      <button class="chip" data-ty="indica" onclick="setTy('indica')">Indica</button>
+      <button class="chip" data-ty="hybrid" onclick="setTy('hybrid')">Hybrid</button>
+    </div>
+    <div class="brow">
+      <select id="sort" onchange="render()">
+        <option value="best">Best Value ($/g)</option>
+        <option value="cheap">Cheapest Price</option>
+        <option value="thc">Highest THC</option>
+        <option value="sale">On Sale First</option>
+        <option value="az">A to Z</option>
+      </select>
+      <div class="taxrow"><span class="taxlbl">After-tax</span><button class="toggle on" id="taxT" onclick="togTax()"></button></div>
     </div>
   </div>
-</div>
-
-<div class="store-bar" id="storeBar" style="display:none"></div>
-
-<div class="loader" id="loader">
-  <div class="spin"></div>
-  <div class="lmsg" id="lmsg">Finding dispensaries...</div>
-  <div class="lsteps" id="lsteps"></div>
-</div>
-
-<div class="results">
-  <div class="welcome" id="welcome">
-    <div class="wi">🌿</div>
-    <h2>Find the best deals near you</h2>
-    <p>Allow location access or enter your zip code — GramHunt pulls <strong>live menus</strong> from every dispensary nearby and ranks them by price, THC, and distance.</p>
+  <div class="results">
+    <div class="loader" id="loader"><div class="sp"></div>Scanning menus...</div>
+    <div class="empty on" id="emptyMsg">Hit "Scan Menus" to load live deals from nearby dispensaries!</div>
+    <div class="topbar" id="topbar" style="display:none"><span class="rcount" id="rcount"></span></div>
+    <div class="grid" id="grid"></div>
   </div>
-  <div class="empty" id="emptyMsg">No products match your filters.</div>
-  <div class="topbar" id="topbar" style="display:none">
-    <div>
-      <div class="rcount" id="rcount"></div>
-      <div class="scraped" id="scrapeNote"></div>
-    </div>
-    <div class="vbtns">
-      <button class="vb on" id="vg" onclick="setView('grid')">⊞</button>
-      <button class="vb"    id="vl" onclick="setView('list')">☰</button>
-    </div>
-  </div>
-  <div id="area"></div>
 </div>
-
 <script>
-// ── CT / MA TAX CALCULATOR ──
-const CT_EXCISE = 0.00625; // per mg THC for flower
-const CT_SALES  = 0.0635;
-const CT_MUNI   = 0.03;
-const MA_SALES  = 0.10625; // MA flat 10.625%
+// CT cannabis tax rates
+const ST=0.0635,MT=0.03;
+const WG={'1g':1,'3.5g':3.5,'7g':7,'14g':14,'28g':28};
+const WL={'1g':'1g','3.5g':'1/8 oz — 3.5g','7g':'1/4 oz — 7g','14g':'1/2 oz — 14g','28g':'1 oz — 28g'};
+let prods=[],storesArr=[],uLat=null,uLon=null,szF='all',tyF='all',stF='all',showTax=true;
 
-const WEIGHT_G = {'3.5g':3.5,'7g':7,'14g':14,'28g':28};
-const WGT_LABELS = {'3.5g':'⅛ oz — 3.5g','7g':'¼ oz — 7g','14g':'½ oz — 14g','28g':'1 oz — 28g'};
+function $(id){return document.getElementById(id);}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function calcTaxCT(base, thcPct, wg) {
-  const excise = (wg * 1000) * (thcPct / 100) * CT_EXCISE;
-  const sub = base + excise;
-  return Math.round(sub * (1 + CT_SALES + CT_MUNI) * 100) / 100;
-}
-function calcTaxMA(base) {
-  return Math.round(base * (1 + MA_SALES) * 100) / 100;
-}
-function calcAfterTax(base, thcPct, wg, state) {
-  return (state === 'MA' ? calcTaxMA(base) : calcTaxCT(base, thcPct, wg));
-}
+window.addEventListener('DOMContentLoaded',function(){
+  detectLoc();
+});
 
-const COLORS = ['#39d353','#22d3ee','#a78bfa','#f97316','#fbbf24','#34d399','#f472b6','#fb923c','#60a5fa','#e879f9'];
-
-// ── STATE ──
-let uLat=41.8408, uLng=-72.4509, uState='CT';
-let allProducts=[], allStores=[], scrapedAt='';
-let szMode='all', tyMode='all', vMode='grid', showTax=true, rad=25;
-let selStores=new Set(['all']), loaded=false;
-
-// ── GPS ──
-function getGPS() {
-  const b = document.getElementById('gpsBadge');
-  b.className = 'gps-badge wait';
-  document.getElementById('gpsLbl').textContent = 'Locating...';
-  if (!navigator.geolocation) { gpsErr(); return; }
-  navigator.geolocation.getCurrentPosition(gpsOk, gpsErr, {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
-}
-
-async function gpsOk(pos) {
-  uLat = pos.coords.latitude;
-  uLng = pos.coords.longitude;
-  try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${uLat}&lon=${uLng}&format=json`);
-    const d = await r.json();
-    const city = d.address.city || d.address.town || d.address.village || 'Your Location';
-    uState = d.address.state_code || d.address.state || 'CT';
-    document.getElementById('gpsBadge').className = 'gps-badge ok';
-    document.getElementById('gpsLbl').textContent = city;
-    document.getElementById('locInput').placeholder = city;
-  } catch(e) {
-    document.getElementById('gpsBadge').className = 'gps-badge ok';
-    document.getElementById('gpsLbl').textContent = 'GPS found';
+function detectLoc(){
+  if(!navigator.geolocation){
+    $('locTxt').innerHTML='Location unavailable — using <b>Hartford, CT</b>';
+    return;
   }
-  await fetchMenus();
+  navigator.geolocation.getCurrentPosition(function(p){
+    uLat=p.coords.latitude;uLon=p.coords.longitude;
+    $('locTxt').innerHTML='<b>'+uLat.toFixed(4)+', '+uLon.toFixed(4)+'</b> — ready to scan';
+  },function(){
+    $('locTxt').innerHTML='Location denied — using <b>Hartford, CT</b>';
+  },{enableHighAccuracy:true,timeout:8000});
 }
 
-function gpsErr() {
-  document.getElementById('gpsBadge').className = 'gps-badge err';
-  document.getElementById('gpsLbl').textContent = 'No GPS';
-}
-
-// ── TEXT SEARCH (zip / city / address) ──
-async function searchByText() {
-  const q = document.getElementById('locInput').value.trim();
-  if (!q) { getGPS(); return; }
-  document.getElementById('locBtn').disabled = true;
-  document.getElementById('locBtn').textContent = '...';
-  try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=us`);
-    const d = await r.json();
-    if (d.length) {
-      uLat = parseFloat(d[0].lat);
-      uLng = parseFloat(d[0].lon);
-      uState = q.toUpperCase().includes('MA') || d[0].display_name.includes('Massachusetts') ? 'MA' : 'CT';
-      document.getElementById('gpsBadge').className = 'gps-badge ok';
-      document.getElementById('gpsLbl').textContent = d[0].display_name.split(',')[0];
-      await fetchMenus();
-    } else {
-      alert('Location not found. Try a zip code like "06066" or city like "Manchester CT"');
-    }
-  } catch(e) {
-    alert('Could not find that location. Try a zip code.');
-  }
-  document.getElementById('locBtn').disabled = false;
-  document.getElementById('locBtn').textContent = 'Search';
-}
-
-// ── FETCH LIVE MENUS from Netlify Function ──
-async function fetchMenus() {
-  document.getElementById('welcome').style.display = 'none';
-  document.getElementById('loader').classList.add('on');
-  document.getElementById('area').innerHTML = '';
-  document.getElementById('topbar').style.display = 'none';
-  document.getElementById('storeBar').style.display = 'none';
-  document.getElementById('stats').style.display = 'none';
-  document.getElementById('emptyMsg').classList.remove('on');
-
-  const lmsg = document.getElementById('lmsg');
-  const lsteps = document.getElementById('lsteps');
-  lmsg.textContent = 'Scanning dispensaries within ' + rad + ' miles...';
-
-  // Animate loading steps
-  const steps = ['📍 Getting your location...', '🔍 Finding nearby dispensaries...', '📋 Loading live menus...', '⭐ Ranking by Best Match...'];
-  lsteps.innerHTML = steps.map((s,i) => `<div class="lstep" id="ls${i}"><span class="ldot" style="background:var(--green)"></span>${s}</div>`).join('');
-  steps.forEach((_,i) => setTimeout(() => document.getElementById('ls'+i)?.classList.add('on'), i*700));
-
-  try {
-    // Call our Netlify function
-    const apiUrl = `/.netlify/functions/menu?lat=${uLat}&lng=${uLng}&radius=${rad}`;
-    const res = await fetch(apiUrl);
-    const data = await res.json();
-
-    document.getElementById('loader').classList.remove('on');
-
-    if (data.fallback || !data.products?.length) {
-      // API failed or returned no products - show store links
-      showFallback(data.stores || [], data.error);
-      return;
-    }
-
-    allProducts = data.products;
-    allStores = data.stores;
-    scrapedAt = data.scrapedAt ? new Date(data.scrapedAt).toLocaleTimeString() : 'just now';
-    loaded = true;
-
-    // Assign colors
-    allStores.forEach((s,i) => s.color = COLORS[i % COLORS.length]);
-
-    document.getElementById('storeBar').style.display = 'flex';
-    document.getElementById('stats').style.display = 'grid';
-    renderStorePills();
+async function doScan(){
+  var btn=$('scanBtn');
+  btn.disabled=true;btn.textContent='Scanning...';
+  $('loader').classList.add('on');
+  $('emptyMsg').classList.remove('on');
+  $('grid').innerHTML='';
+  $('topbar').style.display='none';
+  try{
+    var lat=uLat||41.7637,lng=uLon||-72.6851;
+    var url='/api/menu?lat='+lat+'&lng='+lng+'&radius=25';
+    var resp=await fetch(url);
+    var data=await resp.json();
+    prods=data.products||[];
+    storesArr=data.stores||[];
+    updStats();
+    updStoreF();
     render();
-
-  } catch(e) {
-    document.getElementById('loader').classList.remove('on');
-    showFallback([], e.message);
+    btn.textContent='Found '+prods.length+'!';
+    setTimeout(function(){btn.textContent='Scan Menus';btn.disabled=false;},3000);
+  }catch(e){
+    console.error(e);
+    $('emptyMsg').textContent='Error loading data. Check console.';
+    $('emptyMsg').classList.add('on');
+    btn.textContent='Scan Menus';btn.disabled=false;
   }
+  $('loader').classList.remove('on');
 }
 
-function showFallback(stores, err) {
-  document.getElementById('welcome').style.display = 'flex';
-  const storeLinks = stores.length
-    ? stores.map(s => `<a class="store-link" href="${s.url}" target="_blank">
-        <span style="width:10px;height:10px;border-radius:50%;background:${s.color||'#39d353'};flex-shrink:0"></span>
-        <span style="flex:1;font-size:13px;font-weight:600">${s.name}</span>
-        <span style="font-size:10px;color:var(--muted)">${s.dist}mi</span>
-        <span style="font-size:11px;color:var(--green);font-weight:700">Browse →</span>
-      </a>`).join('')
-    : '';
-  document.getElementById('welcome').innerHTML = `
-    <div class="wi">🏪</div>
-    <h2>Live menus loading</h2>
-    <p style="font-size:11px;color:var(--muted)">The iHeartJane API is initializing. Browse stores directly while it warms up:</p>
-    <div class="store-list">${storeLinks}</div>`;
+function updStats(){
+  var prices=prods.filter(function(p){return p.price>0;}).map(function(p){return p.price;});
+  var thcs=prods.filter(function(p){return p.thc>0;}).map(function(p){return p.thc;});
+  var onSale=prods.filter(function(p){return p.onSale;}).length;
+  $('sN').textContent=prods.length||'—';
+  $('sC').textContent=prices.length?'$'+Math.min.apply(null,prices).toFixed(2):'—';
+  $('sT').textContent=thcs.length?Math.max.apply(null,thcs).toFixed(1)+'%':'—';
+  $('sSale').textContent=onSale||'0';
+  $('sBadge').textContent=storesArr.length+' Stores';
 }
 
-// ── UI HELPERS ──
-function onRad(){rad=parseInt(document.getElementById('radSlider').value);document.getElementById('rv').textContent=rad+' mi';}
-function setSz(sz){szMode=sz;document.querySelectorAll('[data-sz]').forEach(c=>c.classList.toggle('on',c.dataset.sz===sz));render();}
-function setTy(ty){tyMode=ty;const cls={all:'',sativa:'on-s',indica:'on-i',hybrid:'on-h'};document.querySelectorAll('[data-ty]').forEach(c=>{c.className='chip'+(c.dataset.ty===ty?' on '+(cls[ty]||''):'');if(c.dataset.ty===ty&&ty==='all')c.classList.add('on');});render();}
-function setView(v){vMode=v;document.getElementById('vg').classList.toggle('on',v==='grid');document.getElementById('vl').classList.toggle('on',v==='list');render();}
-function toggleTax(){showTax=!showTax;document.getElementById('taxToggle').classList.toggle('on',showTax);render();}
-function toggleStore(id){if(id==='all'){selStores=new Set(['all']);}else{selStores.delete('all');selStores.has(id)?selStores.delete(id):selStores.add(id);if(!selStores.size)selStores=new Set(['all']);}renderStorePills();render();}
-
-function renderStorePills(){
-  document.getElementById('storeBar').innerHTML =
-    `<div class="sp ${selStores.has('all')?'on':''}" onclick="toggleStore('all')"><span>All</span><span class="spdm">${allStores.length} stores</span></div>` +
-    allStores.map(s=>`<div class="sp ${selStores.has(s.id)?'on':''}" onclick="toggleStore('${s.id}')"><span class="spdot" style="background:${s.color}"></span><span>${s.short||s.name.split(' ')[0]}</span><span class="spdm">${s.dist}mi</span></div>`).join('');
-}
-
-function storeById(id){return allStores.find(s=>s.id===id)||{};}
-
-function getPrice(p){
-  if(szMode!=='all'&&p.prices[szMode])return{price:p.prices[szMode],weight:szMode};
-  const ws=Object.keys(p.prices);
-  if(!ws.length)return null;
-  const w=ws.reduce((a,b)=>p.prices[a]<p.prices[b]?a:b);
-  return{price:p.prices[w],weight:w};
-}
-function fmt(n){return'$'+n.toFixed(2).replace(/\.00$/,'');}
-function thcCol(v){return v>=30?'#39d353':v>=24?'#fbbf24':'#f97316';}
-
-function computeScores(list){
-  if(!list.length)return;
-  const prices=list.map(p=>getPrice(p)?.price).filter(Boolean);
-  const thcs=list.map(p=>p.thc);
-  const dists=list.map(p=>storeById(p.sid).dist||99);
-  const minP=Math.min(...prices),maxP=Math.max(...prices);
-  const minT=Math.min(...thcs),maxT=Math.max(...thcs);
-  const minD=Math.min(...dists),maxD=Math.max(...dists);
-  list.forEach(p=>{
-    const pr=getPrice(p)?.price||maxP;
-    const pS=maxP===minP?1:(maxP-pr)/(maxP-minP);
-    const tS=maxT===minT?1:(p.thc-minT)/(maxT-minT);
-    const dS=maxD===minD?1:(maxD-(storeById(p.sid).dist||99))/(maxD-minD);
-    const saleB=p.onSale?.08:0;
-    p._score=Math.round(Math.min(100,(pS*.40+tS*.40+dS*.12+saleB)*100));
+function updStoreF(){
+  var r=$('storeF');
+  r.innerHTML='<button class="chip on" data-st="all" onclick="setSt('all')">All Stores</button>';
+  storesArr.forEach(function(s){
+    var b=document.createElement('button');
+    b.className='chip';b.dataset.st=s.id;
+    b.textContent=s.name;
+    b.onclick=function(){setSt(s.id);};
+    r.appendChild(b);
   });
 }
 
-function getList(){
-  const q=document.getElementById('q').value.toLowerCase();
-  const srt=document.getElementById('sort').value;
-  let list=allProducts.filter(p=>{
-    if(!selStores.has('all')&&!selStores.has(p.sid))return false;
-    if(tyMode!=='all'&&p.type!==tyMode)return false;
-    if(szMode!=='all'&&!p.prices[szMode])return false;
-    if(q&&!p.name.toLowerCase().includes(q))return false;
-    return true;
-  });
-  computeScores(list);
-  list.sort((a,b)=>{
-    if(srt==='best')return b._score-a._score;
-    if(srt==='cheap'){const pa=getPrice(a)?.price||999,pb=getPrice(b)?.price||999;return pa-pb;}
-    if(srt==='thc')return b.thc-a.thc;
-    if(srt==='sale')return(b.onSale?1:0)-(a.onSale?1:0);
-    if(srt==='dist')return(storeById(a.sid).dist||99)-(storeById(b.sid).dist||99);
-    return a.name.localeCompare(b.name);
-  });
-  return list;
-}
-
-function card(p,rank,isCheapest,isTopTHC){
-  const s=storeById(p.sid);
-  const isBest=rank===0;
-  const col=thcCol(p.thc);
-  const pct=Math.min(100,(p.thc/40)*100);
-  const tmap={sativa:'bg-s',indica:'bg-i',hybrid:'bg-h',cbd:'bg-h'};
-  const tlbl={sativa:'Sativa',indica:'Indica',hybrid:'Hybrid',cbd:'CBD'};
-
-  const priceRows=Object.entries(p.prices).map(([w,base])=>{
-    const wg=WEIGHT_G[w]||3.5;
-    const taxed=showTax?calcAfterTax(base,p.thc,wg,s.state||uState):null;
-    const isHi=(szMode!=='all'&&w===szMode)||(szMode==='all'&&w===(getPrice(p)?.weight));
-    return `<div class="prow ${isHi?'hi':''}">
-      <span class="plabel">${WGT_LABELS[w]||w}</span>
-      <span>
-        <span class="pamt">${fmt(base)}</span>
-        ${taxed?`<span class="ptax">→ ${fmt(taxed)}</span><span class="ptax-lbl"> w/tax</span>`:''}
-      </span>
-    </div>`;
-  }).join('');
-
-  return `<div class="card ${isBest?'best':''} ${isCheapest&&!isBest?'deal':''} ${isTopTHC&&!isBest?'topc':''}">
-    ${isBest?'<div class="ribbon">⭐ Best Match</div>':''}
-    <div class="bgs">
-      <span class="bg ${tmap[p.type]||'bg-h'}">${tlbl[p.type]||p.type}</span>
-      ${p.onSale?'<span class="bg bg-sale">🏷️ SALE</span>':''}
-      ${isCheapest&&!isBest?'<span class="bg bg-deal">💰 Cheapest</span>':''}
-      ${isTopTHC&&!isBest?'<span class="bg bg-thc">🏆 Top THC</span>':''}
-    </div>
-    <div class="sname">${p.name}</div>
-    <div class="thcrow">
-      <span class="thclabel" style="color:${col}">${p.thc}%</span>
-      <div class="thctrack"><div class="thcfill" style="width:${pct}%;background:${col}"></div></div>
-    </div>
-    <div class="score-row">
-      <span class="score-lbl">Best Match</span>
-      <div class="score-track"><div class="score-fill" style="width:${p._score}%"></div></div>
-      <span class="score-num">${p._score}</span>
-    </div>
-    <div class="pblock">
-      <div class="pblock-head">Price${showTax?' · After Tax':''}</div>
-      ${priceRows}
-      ${showTax?`<div class="tax-note">${(s.state||uState)==='MA'?'MA: 10.625% flat':'CT: $0.00625/mg THC + 6.35% + 3% municipal'}</div>`:''}
-    </div>
-    <div class="stag">
-      <div class="sic" style="background:${s.color||'#39d353'}22;color:${s.color||'#39d353'}">${(s.short||s.name||'').substring(0,2).toUpperCase()}</div>
-      <div style="flex:1">
-        <div class="snm" style="color:${s.color||'#39d353'}">${s.name}</div>
-        <div class="sdt">★${s.rating||4.5} · ${s.dist||'?'}mi · ${s.city||''}</div>
-        ${s.hours?`<div class="shrs">🕐 ${s.hours}</div>`:''}
-      </div>
-      <a class="obtn" href="${s.url||'#'}" target="_blank">Order →</a>
-    </div>
-  </div>`;
-}
+function togTax(){showTax=!showTax;$('taxT').classList.toggle('on',showTax);render();}
+function setSt(id){stF=id;document.querySelectorAll('[data-st]').forEach(function(c){c.classList.toggle('on',c.dataset.st===id);});render();}
+function setSz(sz){szF=sz;document.querySelectorAll('[data-sz]').forEach(function(c){c.classList.toggle('on',c.dataset.sz===sz);});render();}
+function setTy(ty){tyF=ty;var m={all:'on',sativa:'on-s',indica:'on-i',hybrid:'on-h'};document.querySelectorAll('[data-ty]').forEach(function(c){c.className='chip'+(c.dataset.ty===ty?' '+m[ty]:'');});render();}
 
 function render(){
-  if(!loaded)return;
-  const list=getList();
-  const area=document.getElementById('area');
-  const empty=document.getElementById('emptyMsg');
-  if(!list.length){area.innerHTML='';empty.classList.add('on');document.getElementById('topbar').style.display='none';updateStats([]);return;}
-  empty.classList.remove('on');document.getElementById('topbar').style.display='flex';
-  const cheapestPrice=Math.min(...list.map(p=>getPrice(p)?.price||999).filter(v=>v<999));
-  const topTHC=Math.max(...list.map(p=>p.thc));
-  updateStats(list,cheapestPrice,topTHC);
-  document.getElementById('rcount').textContent=list.length+' products';
-  document.getElementById('scrapeNote').textContent='📡 Live data · Scraped '+scrapedAt;
-  const html=list.map((p,i)=>`<div style="animation-delay:${Math.min(i*12,280)}ms">${card(p,i,getPrice(p)?.price===cheapestPrice,p.thc===topTHC)}</div>`).join('');
-  area.innerHTML=vMode==='grid'?`<div class="grid">${html}</div>`:`<div class="listv">${html}</div>`;
+  var q=$('q').value.toLowerCase(),sort=$('sort').value,g=$('grid');
+  var list=prods.filter(function(p){
+    if(stF!=='all'&&String(p.storeId)!==String(stF))return false;
+    if(tyF!=='all'&&p.type!==tyF)return false;
+    if(szF!=='all'&&(!p.prices||!p.prices[szF]))return false;
+    if(q&&!p.name.toLowerCase().includes(q)&&!(p.brand||'').toLowerCase().includes(q))return false;
+    return true;
+  });
+  if(sort==='cheap')list.sort(function(a,b){return (a.price||999)-(b.price||999);});
+  else if(sort==='thc')list.sort(function(a,b){return (b.thc||0)-(a.thc||0);});
+  else if(sort==='sale')list.sort(function(a,b){return (b.onSale?1:0)-(a.onSale?1:0);});
+  else if(sort==='az')list.sort(function(a,b){return a.name.localeCompare(b.name);});
+  else list.sort(function(a,b){return (a.pricePerGram||999)-(b.pricePerGram||999);});
+  $('emptyMsg').classList.toggle('on',!list.length&&!$('loader').classList.contains('on'));
+  $('topbar').style.display=list.length?'flex':'none';
+  $('rcount').textContent=list.length+' products across '+storesArr.length+' stores';
+  g.innerHTML=list.map(function(p,i){return card(p,i===0);}).join('');
 }
 
-function updateStats(list,cheapestPrice,topTHC){
-  if(!list.length){document.getElementById('stats').style.display='none';return;}
-  document.getElementById('stats').style.display='grid';
-  document.getElementById('sN').textContent=list.length;
-  document.getElementById('sS').textContent=new Set(list.map(p=>p.sid)).size;
-  const cheapP=list.find(p=>getPrice(p)?.price===cheapestPrice);
-  const cheapPr=cheapP?getPrice(cheapP):null;
-  const cheapTaxed=cheapPr?calcAfterTax(cheapPr.price,cheapP.thc,WEIGHT_G[cheapPr.weight]||3.5,storeById(cheapP.sid).state||uState):cheapestPrice;
-  document.getElementById('sC').textContent=cheapestPrice<999?fmt(showTax?cheapTaxed:cheapestPrice):'—';
-  document.getElementById('sT').textContent=topTHC?topTHC+'%':'—';
+function taxPrice(base){return Math.round((base+base*ST+base*MT)*100)/100;}
+function tcol(v){return v>=30?'#39d353':v>=24?'#fbbf24':'#f97316';}
+
+function card(p,best){
+  var col=tcol(p.thc||0),pct=Math.min(100,((p.thc||0)/40)*100);
+  var tm={sativa:'bg-s',indica:'bg-i',hybrid:'bg-h'};
+  var pr=Object.entries(p.prices||{}).map(function(e){
+    var w=e[0],b=e[1];
+    var t=taxPrice(b);
+    return '<div class="prow"><span class="plabel">'+(WL[w]||w)+'</span><span><span class="pamt">$'+b.toFixed(2)+'</span>'+(showTax?'<span class="ptax">→ $'+t.toFixed(2)+'</span>':'')+'</span></div>';
+  }).join('');
+  var ppg=p.pricePerGram?'$'+p.pricePerGram+'/g':'';
+  return '<div class="card '+(best?'best':'')+' '+(p.onSale?'deal':'')+'">'
+    +(best?'<div class="ribbon">Best Value</div>':'')
+    +'<div class="bgs"><span class="bg '+(tm[p.type]||'bg-h')+'">'+(p.type||'hybrid').toUpperCase()+'</span>'+(p.onSale?'<span class="bg bg-sale">SALE</span>':'')+'</div>'
+    +'<div class="sname">'+esc(p.name)+'</div>'
+    +(p.brand?'<div style="font-size:11px;color:var(--t2);margin-bottom:8px">'+esc(p.brand)+'</div>':'')
+    +'<div class="thcrow"><span class="thclabel" style="color:'+col+'">'+(p.thc||'?')+'%</span><div class="thctrack"><div class="thcfill" style="width:'+pct+'%;background:'+col+'"></div></div>'+(ppg?'<span style="font-size:10px;color:var(--muted);font-family:JetBrains Mono,monospace">'+ppg+'</span>':'')+'</div>'
+    +'<div class="pblock"><div class="pblock-head">Price'+(showTax?' + Tax (CT)':'')+'</div>'+(pr||'<div class="prow"><span class="plabel">N/A</span></div>')+'</div>'
+    +'<div class="stag"><div class="sic" style="background:var(--gdim);color:var(--green)">'+(p.storeName||'?').substring(0,2).toUpperCase()+'</div><div style="flex:1"><div class="snm">'+esc(p.storeName||'Unknown')+'</div><div class="sdt">'+esc(p.storeCity||'')+'</div></div>'+(p.url?'<a href="'+p.url+'" target="_blank" style="color:var(--muted);font-size:10px;text-decoration:none">View</a>':'')+'</div>'
+    +'</div>';
 }
 
-// Auto-request GPS on load
-window.addEventListener('load', getGPS);
+function swTab(t){
+  $('tB').classList.toggle('on',t==='b');$('tC').classList.toggle('on',t==='c');
+  $('bpanel').classList.toggle('on',t==='b');$('cpanel').classList.toggle('on',t==='c');
+  if(t==='c')$('cinp').focus();
+}
+
+async function sendC(){
+  var inp=$('cinp'),msg=inp.value.trim();if(!msg)return;
+  var msgs=$('cmsgs');
+  msgs.innerHTML+='<div class="cm u">'+esc(msg)+'</div>';
+  inp.value='';inp.disabled=true;$('csend').disabled=true;
+  msgs.innerHTML+='<div class="typing" id="td"><span></span><span></span><span></span></div>';
+  msgs.scrollTop=msgs.scrollHeight;
+  try{
+    var body=JSON.stringify({query:msg,products:prods.slice(0,80),stores:storesArr});
+    var r=await(await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:body})).json();
+    var td=document.getElementById('td');if(td)td.remove();
+    msgs.innerHTML+='<div class="cm a">'+r.answer.replace(/**(.*?)**/g,'<strong>$1</strong>').replace(/
+/g,'<br>')+'</div>';
+  }catch(e){
+    var td=document.getElementById('td');if(td)td.remove();
+    msgs.innerHTML+='<div class="cm a" style="border-color:var(--red)">Error reaching server. Make sure the API is running!</div>';
+  }
+  inp.disabled=false;$('csend').disabled=false;msgs.scrollTop=msgs.scrollHeight;inp.focus();
+}
 </script>
 </body>
 </html>
